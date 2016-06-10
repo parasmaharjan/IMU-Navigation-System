@@ -6,7 +6,7 @@
 clear
 clc
 
-%fclose(instrfind)
+fclose(instrfind)
 
 %User Defined Properties 
 serialPort = 'COM11';            % define COM port #
@@ -14,8 +14,8 @@ plotTitle = 'Serial Data Log';  % plot title
 xLabel = 'Elapsed Time (s)';    % x-axis label
 yLabel = 'Data';                % y-axis label
 plotGrid = 'on';                % 'off' to turn off grid
-min = -3.5;                     % set y-min
-max = 3.5;                      % set y-max
+min = -2;                     % set y-min
+max = 2;                      % set y-max
 scrollWidth = 10;               % display period in plot, plot entire data log if <= 0
 delay = .001;                    % make sure sample faster than resolution
  
@@ -26,10 +26,10 @@ count = 0;
  
 %Set up Plot
 plotGraph = plot(time,data,'-mo',...
-                'LineWidth',1,...
+                'LineWidth',2,...
                 'MarkerEdgeColor','k',...
                 'MarkerFaceColor',[.49 1 .63],...
-                'MarkerSize',2);
+                'MarkerSize',1);
              
 title(plotTitle,'FontSize',25);
 xlabel(xLabel,'FontSize',15);
@@ -56,16 +56,17 @@ while ishandle(plotGraph) %Loop when Plot is Active
     
     dat = num{1}';
     
-    dat = dat(2);
+    dat = dat(1);
     
     if(~isempty(dat) && isfloat(dat)) %Make sure Data Type is Correct        
         count = count + 1;    
         time(count) = toc;    %Extract Elapsed Time
         data(count) = dat(1); %Extract 1st Data Element         
-         
+        stationary(count) = dat(1) < 0.09;
         %Set Axis according to Scroll Width
         if(scrollWidth > 0)
         set(plotGraph,'XData',time(time > time(count)-scrollWidth),'YData',data(time > time(count)-scrollWidth));
+        set(plotGraph,'XData',time(time > time(count)-scrollWidth),'YData',stationary(time > time(count)-scrollWidth));
         axis([time(count)-scrollWidth time(count) min max]);
         else
         set(plotGraph,'XData',time,'YData',data);
