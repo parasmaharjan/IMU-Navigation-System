@@ -9,10 +9,10 @@ addpath('ximu_matlab_library');
 % sensorData = fread(file, inf, 'int16');
 % dlmwrite('out2.csv',sensorData, ',');
 
-startTime = 0;
-stopTime = 20.87;
-xl_name= 'out2.csv';
-sheet_name='out2';
+% startTime = 0;
+% stopTime = 20.87;
+% xl_name= 'out2.csv';
+% sheet_name='out2';
 
 % Import data
 sample = 100;
@@ -28,10 +28,10 @@ samplePeriod = 1/sample;
 % xl_name= 'BrustRev.csv';
 % sheet_name='BrustRev';
 
-% startTime = 0;
-% stopTime = 6.92;
-% xl_name= 'XandY.csv';
-% sheet_name='XandY';
+startTime = 0;
+stopTime = 6.92;
+xl_name= 'XandY.csv';
+sheet_name='XandY';
 
 test1=xlsread (xl_name,sheet_name); 
 
