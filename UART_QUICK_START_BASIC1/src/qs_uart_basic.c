@@ -127,14 +127,21 @@ extern void SysTick_Handler(void)
 }
 
 uint8_t rawSensorData[6];
+char temp_vel_x[10],temp_vel_y[10],temp_vel_z[10];
+char temp_acc_mag[10];
+char temp_stationary[10];
 char temp_x[10], temp_y[10], temp_z[10], temp_roll[10],temp_pitch[10], temp_heading[10];
 char q0[10],q1[10],q2[10],q3[10];
 char buffer[100];
+float acc[3];
+float vel[3];
+float sample_period = 0.01; //  = 10ms/1000ms
 float ax = 0.0, ay = 0.0, az = 0.0;
-float acc_mag = 0.0, acc_mac_filter = 0.0, acc_mag_previous = 0.0;
+float acc_mag = 0.0, acc_mag_high_filter = 0.0, acc_mag_low_filter = 0.0, acc_mag_previous = 0.0, acc_mag_filter = 0.0;
 float fXg, fYg, fZg;
 float alpha = 0.1;
 float roll, pitch, heading;
+float stationary = 0.0;
 
 float quat[4];
 int16_t accelCount[3];
@@ -206,7 +213,48 @@ double atan2(double y, double x)
 		return (-(22/14));
 	}else
 		return 0.0;
-} 
+}
+
+float aef[3]; //globle variable that returns value of rotated quaternion
+static float cq[4];
+
+static void quat_conj(float q[4]){
+	cq[0] = q[0];
+	cq[1] = -q[1];
+	cq[2] = -q[2];
+	cq[3] = -q[3];
+}
+
+void acc_to_earth_frame(float acc[3], float q[4]){
+	float acq[4];
+	float a[4];
+	float quat[4];
+	//including 0 to make 1x4 matrix
+	a[0] = 0.0;
+	a[1] = acc[0];
+	a[2] = acc[1];
+	a[3] = acc[2];
+
+	//calculate conjugate
+	quat_conj(q);
+
+	// quat product
+	acq[0] = a[0] * cq[0] - a[1] * cq[1] - a[2] * cq[2] - a[3] * cq[3];
+	acq[1] = a[0] * cq[1] - a[1] * cq[0] - a[2] * cq[3] - a[3] * cq[2];
+	acq[2] = a[0] * cq[2] - a[1] * cq[3] - a[2] * cq[0] - a[3] * cq[1];
+	acq[3] = a[0] * cq[3] - a[1] * cq[2] - a[2] * cq[1] - a[3] * cq[0];
+
+	// quat product
+	quat[0] = a[0] * q[0] - a[1] * q[1] - a[2] * q[2] - a[3] * q[3];
+	quat[1] = a[0] * q[1] - a[1] * q[0] - a[2] * q[3] - a[3] * q[2];
+	quat[2] = a[0] * q[2] - a[1] * q[3] - a[2] * q[0] - a[3] * q[1];
+	quat[3] = a[0] * q[3] - a[1] * q[2] - a[2] * q[1] - a[3] * q[0];
+
+	//copy to aef
+	aef[0] = quat[1];
+	aef[1] = quat[2];
+	aef[2] = quat[3];
+}
 
 int main(void)
 {
@@ -242,34 +290,72 @@ int main(void)
 		}
 		if(task_2 > 50)
 		{
-// 			readAccelData(&accelCount);
-// 			ax = (float)accelCount[0]/16384.0;
-// 			ay = (float)accelCount[1]/16384.0;
-// 			az = (float)accelCount[2]/16384.0;
-// 			
-// 			acc_mag = sqrt(ax*ax+ay*ay+az*az);
-// 			
-// 			acc_mac_filter = 0.1 * (acc_mac_filter + acc_mag - acc_mag_previous);
-// 			acc_mag_previous = acc_mag;
-			
-			
-			/*Quaternion data*/
 			readQuatData(quat);
-			gcvt(quat[0] , 5 , q0);
-			gcvt(quat[1] , 5 , q1);
-			gcvt(quat[2] , 5 , q2);
-			gcvt(quat[3] , 5 , q3);
-			//printf("%s:%s:%s:%s\n\r",q0,q1,q2,q3);
+			readAccelData(&accelCount);
 			
-			heading = atan2((quat[0]*quat[0] - quat[1] * quat[1] -quat[2] * quat[2] + quat[3] * quat[3]) , (2 * (quat[0] * quat[1] + quat[2] * quat[3])));
-			pitch = asin((-2) * (quat[0] * quat[2] - quat[1] * quat[3]));
-			roll = atan2((- quat[0] * quat[0] - quat[1] * quat[1] + quat[2] * quat[2] + quat[3] * quat[3]) , (2 * (quat[0] * quat[3] + quat[1] * quat[2])));
+			acc[0] = (float)accelCount[0]/16384.0;
+			acc[1] = (float)accelCount[1]/16384.0;
+			acc[2] = (float)accelCount[2]/16384.0;
 			
-			gcvt(roll,5,temp_roll);
-			gcvt(pitch,5,temp_pitch);
-			gcvt(heading,5,temp_heading);
+			acc_mag = sqrt(acc[0]*acc[0]+acc[1]*acc[1]+acc[2]*acc[2]);
 			
-			printf("%s:%s:%s\n\r", temp_roll, temp_pitch, temp_heading);
+			acc_mag_high_filter = 0.4 * (acc_mag_high_filter + acc_mag - acc_mag_previous);
+			acc_mag_previous = acc_mag;
+			
+			if(acc_mag_high_filter < 0.0)
+				acc_mag_high_filter *= (-1.0);
+			
+			acc_mag_low_filter = 0.3 * acc_mag_high_filter + (1 - 0.3) * acc_mag_low_filter;
+			
+			acc_mag_filter = acc_mag_low_filter;
+			
+			stationary = (acc_mag_filter < 0.1 ? 1.0 : 0.0);
+			
+			/* Compute translational acceleration */
+			acc_to_earth_frame(&acc, &quat);
+
+			acc[0] = aef[0] * 9.81;
+			acc[1] = aef[1] * 9.81;
+			acc[2] = aef[2] * 9.81;
+
+			acc[2] = acc[2] - 9.81;
+			
+			vel[0] = vel[0] + acc[0] * sample_period;
+			vel[1] = vel[1] + acc[1] * sample_period;
+			vel[2] = vel[2] + acc[2] * sample_period;
+
+			if(stationary > 0.0){
+				vel[0] = 0.0;
+				vel[1] = 0.0;
+				vel[2] = 0.0;
+			}
+			
+			gcvt(vel[0], 5, temp_vel_x);
+			gcvt(vel[1], 5, temp_vel_y);
+			gcvt(vel[2], 5, temp_vel_z);
+			
+			gcvt(acc_mag_filter,5,temp_acc_mag);
+			gcvt(stationary, 2, temp_stationary);
+			
+			printf("%s:%s:%s:%s:%s\n\r", temp_acc_mag,temp_stationary,temp_vel_x,temp_vel_y,temp_vel_z);
+			
+// 			/*Quaternion data*/
+// 			readQuatData(quat);
+// 			gcvt(quat[0] , 5 , q0);
+// 			gcvt(quat[1] , 5 , q1);
+// 			gcvt(quat[2] , 5 , q2);
+// 			gcvt(quat[3] , 5 , q3);
+// 			//printf("%s:%s:%s:%s\n\r",q0,q1,q2,q3);
+// 			
+// 			heading = atan2((quat[0]*quat[0] - quat[1] * quat[1] -quat[2] * quat[2] + quat[3] * quat[3]) , (2 * (quat[0] * quat[1] + quat[2] * quat[3])));
+// 			pitch = asin((-2) * (quat[0] * quat[2] - quat[1] * quat[3]));
+// 			roll = atan2((- quat[0] * quat[0] - quat[1] * quat[1] + quat[2] * quat[2] + quat[3] * quat[3]) , (2 * (quat[0] * quat[3] + quat[1] * quat[2])));
+// 			
+// 			gcvt(roll,5,temp_roll);
+// 			gcvt(pitch,5,temp_pitch);
+// 			gcvt(heading,5,temp_heading);
+// 			
+// 			printf("%s:%s:%s\n\r", temp_roll, temp_pitch, temp_heading);
 // 			
 // 			/*Raw Accelerometer data*/
 // 			readAccelData(&accelCount);
