@@ -128,14 +128,18 @@ extern void SysTick_Handler(void)
 
 uint8_t rawSensorData[6];
 char temp_vel_x[10],temp_vel_y[10],temp_vel_z[10];
+char temp_pos_x[10],temp_pos_y[10],temp_pos_z[10];
 char temp_acc_mag[10];
 char temp_stationary[10];
 char temp_x[10], temp_y[10], temp_z[10], temp_roll[10],temp_pitch[10], temp_heading[10];
 char q0[10],q1[10],q2[10],q3[10];
 char buffer[100];
-float acc[3];
-float vel[3];
-float sample_period = 0.01; //  = 10ms/1000ms
+float acc[3] = {0.0, 0.0, 0.0};
+float pre_acc[3] = {0.0, 0.0, 0.0};
+float vel[3] = {0.0, 0.0, 0.0};
+float pre_vel[3] = {0.0, 0.0, 0.0};
+float pos[3] = {0.0, 0.0, 0.0};
+float sample_period = 0.05; //  = 50ms/1000ms
 float ax = 0.0, ay = 0.0, az = 0.0;
 float acc_mag = 0.0, acc_mag_high_filter = 0.0, acc_mag_low_filter = 0.0, acc_mag_previous = 0.0, acc_mag_filter = 0.0;
 float fXg, fYg, fZg;
@@ -320,24 +324,36 @@ int main(void)
 
 			acc[2] = acc[2] - 9.81;
 			
-			vel[0] = vel[0] + acc[0] * sample_period;
-			vel[1] = vel[1] + acc[1] * sample_period;
-			vel[2] = vel[2] + acc[2] * sample_period;
+			vel[0] = vel[0] + (acc[0] + ((acc[0] - pre_acc[0]) / 2)) * sample_period;
+			vel[1] = vel[1] + (acc[1] + ((acc[1] - pre_acc[1]) / 2)) * sample_period;
+			vel[2] = vel[2] + (acc[2] + ((acc[2] - pre_acc[2]) / 2)) * sample_period;
 
+			pre_acc[0] = acc[0];
+			pre_acc[1] = acc[1];
+			pre_acc[2] = acc[2];
+			
 			if(stationary > 0.0){
 				vel[0] = 0.0;
 				vel[1] = 0.0;
 				vel[2] = 0.0;
 			}
 			
+			pos[0] = pos[0] + (vel[0] + ((vel[0] - pre_vel[0]) / 2)) * sample_period;
+			pos[1] = pos[1] + (vel[1] + ((vel[1] - pre_vel[1]) / 2)) * sample_period;
+			pos[2] = pos[2] + (vel[2] + ((vel[2] - pre_vel[2]) / 2)) * sample_period;
+			
 			gcvt(vel[0], 5, temp_vel_x);
 			gcvt(vel[1], 5, temp_vel_y);
 			gcvt(vel[2], 5, temp_vel_z);
 			
+			gcvt(pos[0], 5, temp_pos_x);
+			gcvt(pos[1], 5, temp_pos_y);
+			gcvt(pos[2], 5, temp_pos_z);
+			
 			gcvt(acc_mag_filter,5,temp_acc_mag);
 			gcvt(stationary, 2, temp_stationary);
 			
-			printf("%s:%s:%s:%s:%s\n\r", temp_acc_mag,temp_stationary,temp_vel_x,temp_vel_y,temp_vel_z);
+			printf("%s:%s:%s:%s:%s:%s:%s:%s\n\r", temp_acc_mag,temp_stationary,temp_vel_x,temp_vel_y,temp_vel_z,temp_pos_x,temp_pos_y,temp_pos_z);
 			
 // 			/*Quaternion data*/
 // 			readQuatData(quat);
