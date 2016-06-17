@@ -59,8 +59,15 @@ uint32_t task_2 = 0;
 
 static void timer_callback(void)
 {
+	msTick++;
 	task_1++;
 	task_2++;
+}
+
+void delay_ms(uint32_t d)
+{
+	msTick = 0;
+	while(msTick < d);
 }
 
 static void configure_gpio_pins(void)
@@ -147,11 +154,46 @@ float alpha = 0.1;
 float roll, pitch, heading;
 float stationary = 0.0;
 
+float sentralData[13]; // 4-quat data ,3-magneto data, 3-accelero data, 3-gyro data
+char bufferSentral[10]; // buffer to transmit through uart
 float quat[4];
 int16_t accelCount[3];
 float ax, ay, az;
 int16_t gyroCount[3];
 float gx, gy, gz;
+
+void readSentralData(float * destination){
+	uint8_t rawData[40];
+	uint32_t data;
+	for(uint8_t i = 0; i < 40; i++) {
+		rawData[i] = i2c_sentral_read_reg(0x00 + i);
+	}
+	
+	// Quaternion data
+	data = ((rawData[3] << 24)|(rawData[2] << 16)|(rawData[1] << 8) | rawData[0]) ;
+	memcpy(&destination[0], &data, 4);
+	data = ((rawData[7] << 24)|(rawData[6] << 16)|(rawData[5] << 8) | rawData[4]) ;
+	memcpy(&destination[1], &data, 4);
+	data = ((rawData[11] << 24)|(rawData[10] << 16)|(rawData[9] << 8) | rawData[8]) ;
+	memcpy(&destination[2], &data, 4);
+	data = ((rawData[15] << 24)|(rawData[14] << 16)|(rawData[13] << 8) | rawData[12]) ;
+	memcpy(&destination[3], &data, 4);
+	
+	// Magnetometer - +-1000 uT ------> 200/65536 uT = 1 * 10/32.768 milli Gauss
+	destination[4] = (float)((rawData[19] << 8) | rawData[18]) * 10.0 / 32.768;
+	destination[5] = (float)((rawData[21] << 8) | rawData[20]) * 10.0 / 32.768;
+	destination[6] = (float)((rawData[23] << 8) | rawData[22]) * 10.0 / 32.768;
+	
+	// Accelerometer
+	destination[7] = (float)((rawData[27] << 8) | rawData[26]) / 16384.0;
+	destination[8] = (float)((rawData[29] << 8) | rawData[28]) / 16384.0;
+	destination[9] = (float)((rawData[31] << 8) | rawData[30]) / 16384.0;
+	
+	// Gyroscope
+	destination[10] = (float)((rawData[35] << 8) | rawData[34]) / 16.38;
+	destination[11] = (float)((rawData[37] << 8) | rawData[36]) / 16.38;
+	destination[12] = (float)((rawData[39] << 8) | rawData[38]) / 16.38;	
+}
 
 void readQuatData(float * destination)
 {
@@ -294,108 +336,95 @@ int main(void)
 		}
 		if(task_2 > 50)
 		{
-			readQuatData(quat);
-			readAccelData(&accelCount);
+			readSentralData(&sentralData);
+			gcvt(sentralData[0], 5, bufferSentral);
+			printf("%s:", bufferSentral);
+			gcvt(sentralData[1], 5, bufferSentral);
+			printf("%s:", bufferSentral);
+			gcvt(sentralData[2], 5, bufferSentral);
+			printf("%s:", bufferSentral);
+			gcvt(sentralData[3], 5, bufferSentral);
+			printf("%s:", bufferSentral);
+			gcvt(sentralData[4], 5, bufferSentral);
+			printf("%s:", bufferSentral);
+			gcvt(sentralData[5], 5, bufferSentral);
+			printf("%s:", bufferSentral);
+			gcvt(sentralData[6], 5, bufferSentral);
+			printf("%s:", bufferSentral);
+			gcvt(sentralData[7], 5, bufferSentral);
+			printf("%s:", bufferSentral);
+			gcvt(sentralData[8], 5, bufferSentral);
+			printf("%s:", bufferSentral);
+			gcvt(sentralData[9], 5, bufferSentral);
+			printf("%s:", bufferSentral);
+			gcvt(sentralData[10], 5, bufferSentral);
+			printf("%s:", bufferSentral);
+			gcvt(sentralData[11], 5, bufferSentral);
+			printf("%s:", bufferSentral);
+			gcvt(sentralData[12], 5, bufferSentral);
+			printf("%s\n\r", bufferSentral);
 			
-			acc[0] = (float)accelCount[0]/16384.0;
-			acc[1] = (float)accelCount[1]/16384.0;
-			acc[2] = (float)accelCount[2]/16384.0;
 			
-			acc_mag = sqrt(acc[0]*acc[0]+acc[1]*acc[1]+acc[2]*acc[2]);
-			
-			acc_mag_high_filter = 0.4 * (acc_mag_high_filter + acc_mag - acc_mag_previous);
-			acc_mag_previous = acc_mag;
-			
-			if(acc_mag_high_filter < 0.0)
-				acc_mag_high_filter *= (-1.0);
-			
-			acc_mag_low_filter = 0.3 * acc_mag_high_filter + (1 - 0.3) * acc_mag_low_filter;
-			
-			acc_mag_filter = acc_mag_low_filter;
-			
-			stationary = (acc_mag_filter < 0.1 ? 1.0 : 0.0);
-			
-			/* Compute translational acceleration */
-			acc_to_earth_frame(&acc, &quat);
-
-			acc[0] = aef[0] * 9.81;
-			acc[1] = aef[1] * 9.81;
-			acc[2] = aef[2] * 9.81;
-
-			acc[2] = acc[2] - 9.81;
-			
-			vel[0] = vel[0] + (acc[0] + ((acc[0] - pre_acc[0]) / 2)) * sample_period;
-			vel[1] = vel[1] + (acc[1] + ((acc[1] - pre_acc[1]) / 2)) * sample_period;
-			vel[2] = vel[2] + (acc[2] + ((acc[2] - pre_acc[2]) / 2)) * sample_period;
-
-			pre_acc[0] = acc[0];
-			pre_acc[1] = acc[1];
-			pre_acc[2] = acc[2];
-			
-			if(stationary > 0.0){
-				vel[0] = 0.0;
-				vel[1] = 0.0;
-				vel[2] = 0.0;
-			}
-			
-			pos[0] = pos[0] + (vel[0] + ((vel[0] - pre_vel[0]) / 2)) * sample_period;
-			pos[1] = pos[1] + (vel[1] + ((vel[1] - pre_vel[1]) / 2)) * sample_period;
-			pos[2] = pos[2] + (vel[2] + ((vel[2] - pre_vel[2]) / 2)) * sample_period;
-			
-			gcvt(vel[0], 5, temp_vel_x);
-			gcvt(vel[1], 5, temp_vel_y);
-			gcvt(vel[2], 5, temp_vel_z);
-			
-			gcvt(pos[0], 5, temp_pos_x);
-			gcvt(pos[1], 5, temp_pos_y);
-			gcvt(pos[2], 5, temp_pos_z);
-			
-			gcvt(acc_mag_filter,5,temp_acc_mag);
-			gcvt(stationary, 2, temp_stationary);
-			
-			printf("%s:%s:%s:%s:%s:%s:%s:%s\n\r", temp_acc_mag,temp_stationary,temp_vel_x,temp_vel_y,temp_vel_z,temp_pos_x,temp_pos_y,temp_pos_z);
-			
-// 			/*Quaternion data*/
 // 			readQuatData(quat);
-// 			gcvt(quat[0] , 5 , q0);
-// 			gcvt(quat[1] , 5 , q1);
-// 			gcvt(quat[2] , 5 , q2);
-// 			gcvt(quat[3] , 5 , q3);
-// 			//printf("%s:%s:%s:%s\n\r",q0,q1,q2,q3);
-// 			
-// 			heading = atan2((quat[0]*quat[0] - quat[1] * quat[1] -quat[2] * quat[2] + quat[3] * quat[3]) , (2 * (quat[0] * quat[1] + quat[2] * quat[3])));
-// 			pitch = asin((-2) * (quat[0] * quat[2] - quat[1] * quat[3]));
-// 			roll = atan2((- quat[0] * quat[0] - quat[1] * quat[1] + quat[2] * quat[2] + quat[3] * quat[3]) , (2 * (quat[0] * quat[3] + quat[1] * quat[2])));
-// 			
-// 			gcvt(roll,5,temp_roll);
-// 			gcvt(pitch,5,temp_pitch);
-// 			gcvt(heading,5,temp_heading);
-// 			
-// 			printf("%s:%s:%s\n\r", temp_roll, temp_pitch, temp_heading);
-// 			
-// 			/*Raw Accelerometer data*/
 // 			readAccelData(&accelCount);
-// 			ax = (float)accelCount[0]/16384.0;
-// 			ay = (float)accelCount[1]/16384.0;
-// 			az = (float)accelCount[2]/16384.0;
 // 			
-// 			//Low Pass Filter
-// 			fXg = ax * alpha + (fXg * (1.0 - alpha));
-// 			fYg = ay * alpha + (fYg * (1.0 - alpha));
-// 			fZg = az * alpha + (fZg * (1.0 - alpha));
-// 
-// 			//Roll & Pitch Equations
-// 			roll  = (atan(-fYg/ fZg)*180.0)/3.14;
-// 			pitch = (atan(fXg/ sqrt(fYg*fYg + fZg*fZg))*180.0)/3.14;
+// 			acc[0] = (float)accelCount[0]/16384.0;
+// 			acc[1] = (float)accelCount[1]/16384.0;
+// 			acc[2] = (float)accelCount[2]/16384.0;
 // 			
-// 			gcvt(ax,5,temp_x);
-// 			gcvt(ay,5,temp_y);
-// 			gcvt(az,5,temp_z);
+// 			acc_mag = sqrt(acc[0]*acc[0]+acc[1]*acc[1]+acc[2]*acc[2]);
+// 			
+// 			acc_mag_high_filter = 0.4 * (acc_mag_high_filter + acc_mag - acc_mag_previous);
+// 			acc_mag_previous = acc_mag;
+// 			
+// 			if(acc_mag_high_filter < 0.0)
+// 				acc_mag_high_filter *= (-1.0);
+// 			
+// 			acc_mag_low_filter = 0.3 * acc_mag_high_filter + (1 - 0.3) * acc_mag_low_filter;
+// 			
+// 			acc_mag_filter = acc_mag_low_filter;
+// 			
+// 			stationary = (acc_mag_filter < 0.1 ? 1.0 : 0.0);
+// 			
+// 			/* Compute translational acceleration */
+// 			acc_to_earth_frame(&acc, &quat);
 // 
-// 			gcvt(roll,5,temp_roll);
-// 			gcvt(pitch,5,temp_pitch);
-			
-			//printf("%s:%s\n\r",temp_pitch,temp_roll);
+// 			acc[0] = aef[0] * 9.81;
+// 			acc[1] = aef[1] * 9.81;
+// 			acc[2] = aef[2] * 9.81;
+// 
+// 			acc[2] = acc[2] - 9.81;
+// 			
+// 			vel[0] = vel[0] + (acc[0] + ((acc[0] - pre_acc[0]) / 2)) * sample_period;
+// 			vel[1] = vel[1] + (acc[1] + ((acc[1] - pre_acc[1]) / 2)) * sample_period;
+// 			vel[2] = vel[2] + (acc[2] + ((acc[2] - pre_acc[2]) / 2)) * sample_period;
+// 
+// 			pre_acc[0] = acc[0];
+// 			pre_acc[1] = acc[1];
+// 			pre_acc[2] = acc[2];
+// 			
+// 			if(stationary > 0.0){
+// 				vel[0] = 0.0;
+// 				vel[1] = 0.0;
+// 				vel[2] = 0.0;
+// 			}
+// 			
+// 			pos[0] = pos[0] + (vel[0] + ((vel[0] - pre_vel[0]) / 2)) * sample_period;
+// 			pos[1] = pos[1] + (vel[1] + ((vel[1] - pre_vel[1]) / 2)) * sample_period;
+// 			pos[2] = pos[2] + (vel[2] + ((vel[2] - pre_vel[2]) / 2)) * sample_period;
+// 			
+// 			gcvt(vel[0], 5, temp_vel_x);
+// 			gcvt(vel[1], 5, temp_vel_y);
+// 			gcvt(vel[2], 5, temp_vel_z);
+// 			
+// 			gcvt(pos[0], 5, temp_pos_x);
+// 			gcvt(pos[1], 5, temp_pos_y);
+// 			gcvt(pos[2], 5, temp_pos_z);
+// 			
+// 			gcvt(acc_mag_filter,5,temp_acc_mag);
+// 			gcvt(stationary, 2, temp_stationary);
+// 			
+// 			printf("%s:%s:%s:%s:%s:%s:%s:%s\n\r", temp_acc_mag,temp_stationary,temp_vel_x,temp_vel_y,temp_vel_z,temp_pos_x,temp_pos_y,temp_pos_z);
 			
 			task_2 = 0;
 		}
