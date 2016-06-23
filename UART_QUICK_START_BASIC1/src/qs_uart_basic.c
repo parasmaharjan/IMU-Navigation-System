@@ -54,6 +54,7 @@ volatile static bool read_complete_flag = false;
 volatile static bool write_complete_flag = false;
 uint32_t task_1 = 0;
 uint32_t task_2 = 0;
+uint32_t msTick = 0;
 
 #define CONF_TIMER_RELOAD_VALUE 26000000/1000
 
@@ -154,6 +155,8 @@ float alpha = 0.1;
 float roll, pitch, heading;
 float stationary = 0.0;
 
+int16_t dataAccGyro[7]; // 3- acc data 1-acc timestamp 3 gyro data
+
 float sentralData[13]; // 4-quat data ,3-magneto data, 3-accelero data, 3-gyro data
 char bufferSentral[10]; // buffer to transmit through uart
 float quat[4];
@@ -165,6 +168,7 @@ float gx, gy, gz;
 void readSentralData(float * destination){
 	uint8_t rawData[40];
 	uint32_t data;
+	int16_t data_16;
 	for(uint8_t i = 0; i < 40; i++) {
 		rawData[i] = i2c_sentral_read_reg(0x00 + i);
 	}
@@ -180,19 +184,28 @@ void readSentralData(float * destination){
 	memcpy(&destination[3], &data, 4);
 	
 	// Magnetometer - +-1000 uT ------> 200/65536 uT = 1 * 10/32.768 milli Gauss
-	destination[4] = (float)((rawData[19] << 8) | rawData[18]) * 10.0 / 32.768;
-	destination[5] = (float)((rawData[21] << 8) | rawData[20]) * 10.0 / 32.768;
-	destination[6] = (float)((rawData[23] << 8) | rawData[22]) * 10.0 / 32.768;
+	data_16 = (int16_t)((rawData[19] << 8) | rawData[18]);
+	destination[4] = (float)(data_16) * 10.0 / 32.768;
+	data_16 = (int16_t)((rawData[21] << 8) | rawData[20]);
+	destination[5] = (float)(data_16) * 10.0 / 32.768;
+	data_16 = (int16_t)((rawData[23] << 8) | rawData[22]);
+	destination[6] = (float)(data_16) * 10.0 / 32.768;
 	
 	// Accelerometer
-	destination[7] = (float)((rawData[27] << 8) | rawData[26]) / 16384.0;
-	destination[8] = (float)((rawData[29] << 8) | rawData[28]) / 16384.0;
-	destination[9] = (float)((rawData[31] << 8) | rawData[30]) / 16384.0;
+	data_16 = (int16_t)((rawData[27] << 8) | rawData[26]);
+	destination[7] = (float)(data_16) / 16384.0;
+	data_16 = (int16_t)((rawData[29] << 8) | rawData[28]);
+	destination[8] = (float)(data_16) / 16384.0;
+	data_16 = (int16_t)((rawData[31] << 8) | rawData[30]);
+	destination[9] = (float)(data_16) / 16384.0;
 	
 	// Gyroscope
-	destination[10] = (float)((rawData[35] << 8) | rawData[34]) / 16.38;
-	destination[11] = (float)((rawData[37] << 8) | rawData[36]) / 16.38;
-	destination[12] = (float)((rawData[39] << 8) | rawData[38]) / 16.38;	
+	data_16 = (int16_t)((rawData[35] << 8) | rawData[34]);
+	destination[10] = (float)(data_16) / 16.4;
+	data_16 = (int16_t)((rawData[37] << 8) | rawData[36]);
+	destination[11] = (float)(data_16) / 16.4;
+	data_16 = (int16_t)((rawData[39] << 8) | rawData[38]);
+	destination[12] = (float)(data_16) / 16.4;	
 }
 
 void readQuatData(float * destination)
@@ -243,6 +256,25 @@ void readGyroData(int16_t * destination)
 	destination[0] = (int16_t)((rawData[1] << 8) | rawData[0]) ;
 	destination[1] = (int16_t)((rawData[3] << 8) | rawData[2]) ;
 	destination[2] = (int16_t)((rawData[5] << 8) | rawData[4]) ;
+}
+
+void readAccGryoData(int16_t * destination){
+	uint8_t rawData[15];
+	for (uint8_t i = 0; i < 15; i++)
+	{
+		rawData[i] = i2c_sentral_read_reg(0x1A + i);
+	}
+	
+	destination[0] = (int16_t)((rawData[1] << 8) | rawData[0]) ; // acc data
+	destination[1] = (int16_t)((rawData[3] << 8) | rawData[2]) ;
+	destination[2] = (int16_t)((rawData[5] << 8) | rawData[4]) ;
+	
+	destination[3] = (int16_t)((rawData[7] << 8) | rawData[6]) ; //timestamp
+	
+	destination[4] = (int16_t)((rawData[9] << 8) | rawData[8]) ; //gyro data
+	destination[5] = (int16_t)((rawData[11] << 8) | rawData[10]) ;
+	destination[6] = (int16_t)((rawData[13] << 8) | rawData[12]) ;
+	
 }
 
 double atan2(double y, double x)
@@ -334,35 +366,38 @@ int main(void)
 			gpio_pin_toggle_output_level(LED_0_PIN);
 			task_1 = 0;
 		}
-		if(task_2 > 50)
+		if(task_2 > 10)
 		{
-			readSentralData(&sentralData);
-			gcvt(sentralData[0], 5, bufferSentral);
-			printf("%s:", bufferSentral);
-			gcvt(sentralData[1], 5, bufferSentral);
-			printf("%s:", bufferSentral);
-			gcvt(sentralData[2], 5, bufferSentral);
-			printf("%s:", bufferSentral);
-			gcvt(sentralData[3], 5, bufferSentral);
-			printf("%s:", bufferSentral);
-			gcvt(sentralData[4], 5, bufferSentral);
-			printf("%s:", bufferSentral);
-			gcvt(sentralData[5], 5, bufferSentral);
-			printf("%s:", bufferSentral);
-			gcvt(sentralData[6], 5, bufferSentral);
-			printf("%s:", bufferSentral);
-			gcvt(sentralData[7], 5, bufferSentral);
-			printf("%s:", bufferSentral);
-			gcvt(sentralData[8], 5, bufferSentral);
-			printf("%s:", bufferSentral);
-			gcvt(sentralData[9], 5, bufferSentral);
-			printf("%s:", bufferSentral);
-			gcvt(sentralData[10], 5, bufferSentral);
-			printf("%s:", bufferSentral);
-			gcvt(sentralData[11], 5, bufferSentral);
-			printf("%s:", bufferSentral);
-			gcvt(sentralData[12], 5, bufferSentral);
-			printf("%s\n\r", bufferSentral);
+			readAccGryoData(&dataAccGyro);
+			printf("%d:%d:%d:%d:%d:%d:%d\n\r",(int16_t)dataAccGyro[0],(int16_t)dataAccGyro[1],(int16_t)dataAccGyro[2],(uint16_t)dataAccGyro[3],(int16_t)dataAccGyro[4],(int16_t)dataAccGyro[5],(int16_t)dataAccGyro[6]);
+			
+// 			readSentralData(&sentralData);
+// 			gcvt(sentralData[0], 5, bufferSentral);
+// 			printf("%s:", bufferSentral);
+// 			gcvt(sentralData[1], 5, bufferSentral);
+// 			printf("%s:", bufferSentral);
+// 			gcvt(sentralData[2], 5, bufferSentral);
+// 			printf("%s:", bufferSentral);
+// 			gcvt(sentralData[3], 5, bufferSentral);
+// 			printf("%s:", bufferSentral);
+// 			gcvt(sentralData[4], 5, bufferSentral);
+// 			printf("%s:", bufferSentral);
+// 			gcvt(sentralData[5], 5, bufferSentral);
+// 			printf("%s:", bufferSentral);
+// 			gcvt(sentralData[6], 5, bufferSentral);
+// 			printf("%s:", bufferSentral);
+// 			gcvt(sentralData[7], 5, bufferSentral);
+// 			printf("%s:", bufferSentral);
+// 			gcvt(sentralData[8], 5, bufferSentral);
+// 			printf("%s:", bufferSentral);
+// 			gcvt(sentralData[9], 5, bufferSentral);
+// 			printf("%s:", bufferSentral);
+// 			gcvt(sentralData[10], 5, bufferSentral);
+// 			printf("%s:", bufferSentral);
+// 			gcvt(sentralData[11], 5, bufferSentral);
+// 			printf("%s:", bufferSentral);
+// 			gcvt(sentralData[12], 5, bufferSentral);
+// 			printf("%s\n\r", bufferSentral);
 			
 			
 // 			readQuatData(quat);
