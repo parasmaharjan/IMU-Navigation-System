@@ -6,7 +6,7 @@ addpath('ximu_matlab_library');
 
 fclose(instrfind);
 
-totalsamples = 500;
+totalsamples = 1500;
 index = 0;
 X = 0;
 s = serial('COM11', 'BaudRate' , 115200);
