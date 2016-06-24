@@ -3,35 +3,35 @@ UART_QUICK_START_BASIC1.elf:     file format elf32-littlearm
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         00002e1c  10008000  10008000  00008000  2**2
+  0 .text         00002e10  10008000  10008000  00008000  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .relocate     00000064  1000ae1c  1000ae1c  0000ae1c  2**2
+  1 .relocate     00000064  1000ae10  1000ae10  0000ae10  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .bss          00000284  1000ae80  1000ae80  0000ae80  2**2
+  2 .bss          000000bc  1000ae74  1000ae74  0000ae74  2**2
                   ALLOC
-  3 .stack        00000804  1000b104  1000b104  0000ae80  2**0
+  3 .stack        00000800  1000af30  1000af30  0000ae74  2**0
                   ALLOC
-  4 .ARM.attributes 00000028  00000000  00000000  0000ae80  2**0
+  4 .ARM.attributes 00000028  00000000  00000000  0000ae74  2**0
                   CONTENTS, READONLY
-  5 .comment      0000005b  00000000  00000000  0000aea8  2**0
+  5 .comment      0000005b  00000000  00000000  0000ae9c  2**0
                   CONTENTS, READONLY
-  6 .debug_info   00016de8  00000000  00000000  0000af03  2**0
+  6 .debug_info   000167c1  00000000  00000000  0000aef7  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 00001f01  00000000  00000000  00021ceb  2**0
+  7 .debug_abbrev 00001e55  00000000  00000000  000216b8  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_loc    00003b9b  00000000  00000000  00023bec  2**0
+  8 .debug_loc    00003960  00000000  00000000  0002350d  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_aranges 00000528  00000000  00000000  00027787  2**0
+  9 .debug_aranges 00000500  00000000  00000000  00026e6d  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_ranges 00000480  00000000  00000000  00027caf  2**0
+ 10 .debug_ranges 00000458  00000000  00000000  0002736d  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_macro  000186c8  00000000  00000000  0002812f  2**0
+ 11 .debug_macro  000186c8  00000000  00000000  000277c5  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_line   00007649  00000000  00000000  000407f7  2**0
+ 12 .debug_line   000075ba  00000000  00000000  0003fe8d  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_str    000f03ac  00000000  00000000  00047e40  2**0
+ 13 .debug_str    000f0212  00000000  00000000  00047447  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_frame  000013a8  00000000  00000000  001381ec  2**2
+ 14 .debug_frame  00001308  00000000  00000000  0013765c  2**2
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -144,13 +144,13 @@ void app_entry(void)
     return;
 }
 10008062:	bd10      	pop	{r4, pc}
-10008064:	1000ae1c 	.word	0x1000ae1c
-10008068:	1000ae1c 	.word	0x1000ae1c
-1000806c:	1000ae80 	.word	0x1000ae80
-10008070:	1000b104 	.word	0x1000b104
-10008074:	1000ae80 	.word	0x1000ae80
-10008078:	1000ae20 	.word	0x1000ae20
-1000807c:	1000ae84 	.word	0x1000ae84
+10008064:	1000ae10 	.word	0x1000ae10
+10008068:	1000ae10 	.word	0x1000ae10
+1000806c:	1000ae74 	.word	0x1000ae74
+10008070:	1000af30 	.word	0x1000af30
+10008074:	1000ae74 	.word	0x1000ae74
+10008078:	1000ae14 	.word	0x1000ae14
+1000807c:	1000ae78 	.word	0x1000ae78
 10008080:	10009bb5 	.word	0x10009bb5
 10008084:	10009911 	.word	0x10009911
 
@@ -169,9 +169,9 @@ void app_entry(void)
 1000809e:	2301      	movs	r3, #1
 100080a0:	7023      	strb	r3, [r4, #0]
 100080a2:	bd10      	pop	{r4, pc}
-100080a4:	1000ae80 	.word	0x1000ae80
+100080a4:	1000ae74 	.word	0x1000ae74
 100080a8:	00000000 	.word	0x00000000
-100080ac:	1000ae1c 	.word	0x1000ae1c
+100080ac:	1000ae10 	.word	0x1000ae10
 
 100080b0 <frame_dummy>:
 100080b0:	b508      	push	{r3, lr}
@@ -193,9 +193,9 @@ void app_entry(void)
 100080d0:	4798      	blx	r3
 100080d2:	e7f9      	b.n	100080c8 <frame_dummy+0x18>
 100080d4:	00000000 	.word	0x00000000
-100080d8:	1000ae1c 	.word	0x1000ae1c
-100080dc:	1000ae84 	.word	0x1000ae84
-100080e0:	1000ae1c 	.word	0x1000ae1c
+100080d8:	1000ae10 	.word	0x1000ae10
+100080dc:	1000ae78 	.word	0x1000ae78
+100080e0:	1000ae10 	.word	0x1000ae10
 100080e4:	00000000 	.word	0x00000000
 
 100080e8 <i2c_init_sentral>:
@@ -289,7 +289,7 @@ static inline void i2c_enable(I2C *const i2c_module)
 1000813a:	bdf0      	pop	{r4, r5, r6, r7, pc}
 1000813c:	100083a9 	.word	0x100083a9
 10008140:	00002712 	.word	0x00002712
-10008144:	1000aebc 	.word	0x1000aebc
+10008144:	1000aeb0 	.word	0x1000aeb0
 10008148:	40003400 	.word	0x40003400
 1000814c:	100083c1 	.word	0x100083c1
 
@@ -353,7 +353,7 @@ void i2c_sentral_write_register(uint8_t regAddr, uint8_t *writeByte, uint8_t wri
 1000818e:	46bd      	mov	sp, r7
 10008190:	b003      	add	sp, #12
 10008192:	bdf0      	pop	{r4, r5, r6, r7, pc}
-10008194:	1000aebc 	.word	0x1000aebc
+10008194:	1000aeb0 	.word	0x1000aeb0
 10008198:	100084d5 	.word	0x100084d5
 
 1000819c <i2c_sentral_read_reg>:
@@ -407,7 +407,7 @@ uint8_t i2c_sentral_read_reg(uint8_t regAdr) {
 }
 100081d0:	b008      	add	sp, #32
 100081d2:	bd70      	pop	{r4, r5, r6, pc}
-100081d4:	1000aebc 	.word	0x1000aebc
+100081d4:	1000aeb0 	.word	0x1000aeb0
 100081d8:	10008505 	.word	0x10008505
 100081dc:	100084a5 	.word	0x100084a5
 
@@ -646,7 +646,7 @@ void init_sentral(void) {
 }
 100082b4:	bd08      	pop	{r3, pc}
 100082b6:	46c0      	nop			; (mov r8, r8)
-100082b8:	1000ae9c 	.word	0x1000ae9c
+100082b8:	1000ae90 	.word	0x1000ae90
 100082bc:	10008255 	.word	0x10008255
 100082c0:	100081fd 	.word	0x100081fd
 100082c4:	100081e1 	.word	0x100081e1
@@ -1151,7 +1151,7 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 10008484:	40003000 	.word	0x40003000
 10008488:	10008f49 	.word	0x10008f49
 1000848c:	40003400 	.word	0x40003400
-10008490:	1000aedc 	.word	0x1000aedc
+10008490:	1000aed0 	.word	0x1000aed0
 10008494:	10008535 	.word	0x10008535
 10008498:	100093b1 	.word	0x100093b1
 1000849c:	e000e100 	.word	0xe000e100
@@ -1693,7 +1693,7 @@ __STATIC_INLINE void NVIC_ClearPendingIRQ(IRQn_Type IRQn)
 }
 10008694:	b002      	add	sp, #8
 10008696:	bd70      	pop	{r4, r5, r6, pc}
-10008698:	1000aedc 	.word	0x1000aedc
+10008698:	1000aed0 	.word	0x1000aed0
 1000869c:	40003000 	.word	0x40003000
 100086a0:	e000e100 	.word	0xe000e100
 100086a4:	40003400 	.word	0x40003400
@@ -1776,7 +1776,7 @@ static void timer_isr_handler(void)
 }
 100086e2:	bd08      	pop	{r3, pc}
 100086e4:	100086b5 	.word	0x100086b5
-100086e8:	1000aea0 	.word	0x1000aea0
+100086e8:	1000ae94 	.word	0x1000ae94
 
 100086ec <timer_enable>:
  *
@@ -1807,7 +1807,7 @@ void timer_register_callback(timer_callback_t fun)
 }
 10008700:	4770      	bx	lr
 10008702:	46c0      	nop			; (mov r8, r8)
-10008704:	1000aea0 	.word	0x1000aea0
+10008704:	1000ae94 	.word	0x1000ae94
 
 10008708 <timer_init>:
  * \param[in]     config       Pointer to the TIMER configuration options struct
@@ -1847,7 +1847,7 @@ void timer_init(const struct timer_config *config)
 10008730:	bd10      	pop	{r4, pc}
 10008732:	46c0      	nop			; (mov r8, r8)
 10008734:	10008f49 	.word	0x10008f49
-10008738:	1000aea0 	.word	0x1000aea0
+10008738:	1000ae94 	.word	0x1000ae94
 1000873c:	100086c9 	.word	0x100086c9
 10008740:	100093b1 	.word	0x100093b1
 
@@ -1920,8 +1920,8 @@ _read (int file, char * ptr, int len)
 1000877a:	4690      	mov	r8, r2
 1000877c:	bdf0      	pop	{r4, r5, r6, r7, pc}
 1000877e:	46c0      	nop			; (mov r8, r8)
-10008780:	1000aee8 	.word	0x1000aee8
-10008784:	1000aee0 	.word	0x1000aee0
+10008780:	1000aedc 	.word	0x1000aedc
+10008784:	1000aed4 	.word	0x1000aed4
 
 10008788 <_write>:
 int __attribute__((weak))
@@ -2005,8 +2005,8 @@ _write (int file, char * ptr, int len)
 100087ca:	bc04      	pop	{r2}
 100087cc:	4690      	mov	r8, r2
 100087ce:	bdf0      	pop	{r4, r5, r6, r7, pc}
-100087d0:	1000aee8 	.word	0x1000aee8
-100087d4:	1000aee4 	.word	0x1000aee4
+100087d0:	1000aedc 	.word	0x1000aedc
+100087d4:	1000aed8 	.word	0x1000aed8
 
 100087d8 <gpio_get_config_defaults>:
  *  \param[out] config  Configuration structure to initialize to default values.
@@ -2851,7 +2851,7 @@ enum status_code system_clock_config(enum system_clock_resource resoure, \
 10008bca:	4770      	bx	lr
 10008bcc:	4000b000 	.word	0x4000b000
 10008bd0:	018cba80 	.word	0x018cba80
-10008bd4:	1000aeec 	.word	0x1000aeec
+10008bd4:	1000aee0 	.word	0x1000aee0
 10008bd8:	4000f000 	.word	0x4000f000
 10008bdc:	001e8480 	.word	0x001e8480
 
@@ -2867,7 +2867,7 @@ uint32_t system_clock_get_value(void)
 }
 10008be4:	4770      	bx	lr
 10008be6:	46c0      	nop			; (mov r8, r8)
-10008be8:	1000aeec 	.word	0x1000aeec
+10008be8:	1000aee0 	.word	0x1000aee0
 
 10008bec <system_clock_peripheral_enable>:
  * \return Status of operation.
@@ -5556,7 +5556,7 @@ static void uart_rx0_isr_handler(void)
 	}
 }
 10009442:	bd38      	pop	{r3, r4, r5, pc}
-10009444:	1000aef0 	.word	0x1000aef0
+10009444:	1000aee4 	.word	0x1000aee4
 
 10009448 <uart_tx0_isr_handler>:
 
@@ -5693,7 +5693,7 @@ static void uart_tx0_isr_handler(void)
 }
 100094cc:	bd38      	pop	{r3, r4, r5, pc}
 100094ce:	46c0      	nop			; (mov r8, r8)
-100094d0:	1000aef0 	.word	0x1000aef0
+100094d0:	1000aee4 	.word	0x1000aee4
 
 100094d4 <uart_rx1_isr_handler>:
 
@@ -5828,7 +5828,7 @@ static void uart_rx1_isr_handler(void)
 	}
 }
 10009556:	bd38      	pop	{r3, r4, r5, pc}
-10009558:	1000aef0 	.word	0x1000aef0
+10009558:	1000aee4 	.word	0x1000aee4
 
 1000955c <uart_tx1_isr_handler>:
 
@@ -5965,7 +5965,7 @@ static void uart_tx1_isr_handler(void)
 }
 100095e0:	bd38      	pop	{r3, r4, r5, pc}
 100095e2:	46c0      	nop			; (mov r8, r8)
-100095e4:	1000aef0 	.word	0x1000aef0
+100095e4:	1000aee4 	.word	0x1000aee4
 
 100095e8 <uart_get_config_defaults>:
  * \param[out] config  Pointer to configuration structure to be initiated
@@ -6400,7 +6400,7 @@ enum status_code uart_init(struct uart_module *const module, Uart * const hw,
 10009798:	40004000 	.word	0x40004000
 1000979c:	10008f49 	.word	0x10008f49
 100097a0:	10008bed 	.word	0x10008bed
-100097a4:	1000aef0 	.word	0x1000aef0
+100097a4:	1000aee4 	.word	0x1000aee4
 100097a8:	100093c1 	.word	0x100093c1
 100097ac:	100093b1 	.word	0x100093b1
 100097b0:	10009449 	.word	0x10009449
@@ -6489,8 +6489,8 @@ extern caddr_t _sbrk(int incr)
 }
 1000980c:	4770      	bx	lr
 1000980e:	46c0      	nop			; (mov r8, r8)
-10009810:	1000aea4 	.word	0x1000aea4
-10009814:	1000b908 	.word	0x1000b908
+10009810:	1000ae98 	.word	0x1000ae98
+10009814:	1000b730 	.word	0x1000b730
 
 10009818 <_close>:
 }
@@ -6561,9 +6561,9 @@ static void timer_callback(void)
 }
 1000984c:	4770      	bx	lr
 1000984e:	46c0      	nop			; (mov r8, r8)
-10009850:	1000aeb0 	.word	0x1000aeb0
-10009854:	1000aea8 	.word	0x1000aea8
-10009858:	1000aeac 	.word	0x1000aeac
+10009850:	1000aea4 	.word	0x1000aea4
+10009854:	1000ae9c 	.word	0x1000ae9c
+10009858:	1000aea0 	.word	0x1000aea0
 
 1000985c <usart_serial_getchar>:
  * \param[out]    c       Destination for the read character.
@@ -6609,13 +6609,13 @@ static inline enum status_code usart_serial_putchar(
 10009886:	bd70      	pop	{r4, r5, r6, pc}
 10009888:	100097d1 	.word	0x100097d1
 
-1000988c <readAccGryoData>:
-	destination[0] = (int16_t)((rawData[1] << 8) | rawData[0]) ;
-	destination[1] = (int16_t)((rawData[3] << 8) | rawData[2]) ;
-	destination[2] = (int16_t)((rawData[5] << 8) | rawData[4]) ;
+1000988c <rawAccGryoData>:
+	destination[11] = (float)(data_16) / 16.4;
+	data_16 = (int16_t)((rawData[39] << 8) | rawData[38]);
+	destination[12] = (float)(data_16) / 16.4;	
 }
 
-void readAccGryoData(int16_t * destination){
+void rawAccGryoData(int16_t * destination){
 1000988c:	b570      	push	{r4, r5, r6, lr}
 1000988e:	b084      	sub	sp, #16
 10009890:	1c06      	adds	r6, r0, #0
@@ -6624,7 +6624,7 @@ void readAccGryoData(int16_t * destination){
 	for (uint8_t i = 0; i < 15; i++)
 	{
 		rawData[i] = i2c_sentral_read_reg(0x1A + i);
-10009894:	4d1d      	ldr	r5, [pc, #116]	; (1000990c <readAccGryoData+0x80>)
+10009894:	4d1d      	ldr	r5, [pc, #116]	; (1000990c <rawAccGryoData+0x80>)
 10009896:	1c20      	adds	r0, r4, #0
 10009898:	301a      	adds	r0, #26
 1000989a:	b2c0      	uxtb	r0, r0
@@ -6632,14 +6632,14 @@ void readAccGryoData(int16_t * destination){
 1000989e:	466b      	mov	r3, sp
 100098a0:	54e0      	strb	r0, [r4, r3]
 100098a2:	3401      	adds	r4, #1
-	destination[2] = (int16_t)((rawData[5] << 8) | rawData[4]) ;
+	destination[12] = (float)(data_16) / 16.4;	
 }
 
-void readAccGryoData(int16_t * destination){
+void rawAccGryoData(int16_t * destination){
 	uint8_t rawData[15];
 	for (uint8_t i = 0; i < 15; i++)
 100098a4:	2c0f      	cmp	r4, #15
-100098a6:	d1f6      	bne.n	10009896 <readAccGryoData+0xa>
+100098a6:	d1f6      	bne.n	10009896 <rawAccGryoData+0xa>
 	{
 		rawData[i] = i2c_sentral_read_reg(0x1A + i);
 	}
@@ -6909,13 +6909,13 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 100099ce:	2300      	movs	r3, #0
 100099d0:	6033      	str	r3, [r6, #0]
 		}
-		if(task_2 > 10)
+		if(task_2 > 1)
 100099d2:	4b2a      	ldr	r3, [pc, #168]	; (10009a7c <main+0x16c>)
 100099d4:	681b      	ldr	r3, [r3, #0]
-100099d6:	2b0a      	cmp	r3, #10
+100099d6:	2b01      	cmp	r3, #1
 100099d8:	d9f4      	bls.n	100099c4 <main+0xb4>
 		{
-			readAccGryoData(&dataAccGyro);
+			rawAccGryoData(&dataAccGyro);
 100099da:	4d29      	ldr	r5, [pc, #164]	; (10009a80 <main+0x170>)
 100099dc:	1c28      	adds	r0, r5, #0
 100099de:	4b29      	ldr	r3, [pc, #164]	; (10009a84 <main+0x174>)
@@ -6943,11 +6943,7 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 10009a08:	4663      	mov	r3, ip
 10009a0a:	4d20      	ldr	r5, [pc, #128]	; (10009a8c <main+0x17c>)
 10009a0c:	47a8      	blx	r5
-// 			gcvt(acc_mag_filter,5,temp_acc_mag);
-// 			gcvt(stationary, 2, temp_stationary);
-// 			
-// 			printf("%s:%s:%s:%s:%s:%s:%s:%s\n\r", temp_acc_mag,temp_stationary,temp_vel_x,temp_vel_y,temp_vel_z,temp_pos_x,temp_pos_y,temp_pos_z);
-			
+						
 			task_2 = 0;
 10009a0e:	2200      	movs	r2, #0
 10009a10:	4b1a      	ldr	r3, [pc, #104]	; (10009a7c <main+0x16c>)
@@ -6958,15 +6954,15 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 10009a1c:	100087d9 	.word	0x100087d9
 10009a20:	100087e9 	.word	0x100087e9
 10009a24:	100095e9 	.word	0x100095e9
-10009a28:	1000af34 	.word	0x1000af34
+10009a28:	1000aeec 	.word	0x1000aeec
 10009a2c:	40004000 	.word	0x40004000
 10009a30:	10009615 	.word	0x10009615
-10009a34:	1000aee8 	.word	0x1000aee8
+10009a34:	1000aedc 	.word	0x1000aedc
 10009a38:	10009875 	.word	0x10009875
-10009a3c:	1000aee4 	.word	0x1000aee4
+10009a3c:	1000aed8 	.word	0x1000aed8
 10009a40:	1000985d 	.word	0x1000985d
-10009a44:	1000aee0 	.word	0x1000aee0
-10009a48:	1000ae7c 	.word	0x1000ae7c
+10009a44:	1000aed4 	.word	0x1000aed4
+10009a48:	1000ae70 	.word	0x1000ae70
 10009a4c:	10009c45 	.word	0x10009c45
 10009a50:	100086a9 	.word	0x100086a9
 10009a54:	00006590 	.word	0x00006590
@@ -6977,12 +6973,12 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 10009a68:	e000e100 	.word	0xe000e100
 10009a6c:	100080e9 	.word	0x100080e9
 10009a70:	10008279 	.word	0x10008279
-10009a74:	1000aea8 	.word	0x1000aea8
+10009a74:	1000ae9c 	.word	0x1000ae9c
 10009a78:	100089b1 	.word	0x100089b1
-10009a7c:	1000aeac 	.word	0x1000aeac
-10009a80:	1000af74 	.word	0x1000af74
+10009a7c:	1000aea0 	.word	0x1000aea0
+10009a80:	1000af10 	.word	0x1000af10
 10009a84:	1000988d 	.word	0x1000988d
-10009a88:	1000ad48 	.word	0x1000ad48
+10009a88:	1000ad3c 	.word	0x1000ad3c
 10009a8c:	10009c11 	.word	0x10009c11
 
 10009a90 <__aeabi_uidiv>:
@@ -7150,7 +7146,7 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 10009bca:	4798      	blx	r3
 10009bcc:	3501      	adds	r5, #1
 10009bce:	e7f8      	b.n	10009bc2 <__libc_init_array+0xe>
-10009bd0:	f001 f914 	bl	1000adfc <_init>
+10009bd0:	f001 f90e 	bl	1000adf0 <_init>
 10009bd4:	4b08      	ldr	r3, [pc, #32]	; (10009bf8 <__libc_init_array+0x44>)
 10009bd6:	2500      	movs	r5, #0
 10009bd8:	1c1e      	adds	r6, r3, #0
@@ -7165,10 +7161,10 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 10009bea:	3501      	adds	r5, #1
 10009bec:	e7f8      	b.n	10009be0 <__libc_init_array+0x2c>
 10009bee:	bd70      	pop	{r4, r5, r6, pc}
-10009bf0:	1000ae08 	.word	0x1000ae08
-10009bf4:	1000ae08 	.word	0x1000ae08
-10009bf8:	1000ae08 	.word	0x1000ae08
-10009bfc:	1000ae0c 	.word	0x1000ae0c
+10009bf0:	1000adfc 	.word	0x1000adfc
+10009bf4:	1000adfc 	.word	0x1000adfc
+10009bf8:	1000adfc 	.word	0x1000adfc
+10009bfc:	1000ae00 	.word	0x1000ae00
 
 10009c00 <memset>:
 10009c00:	1c03      	adds	r3, r0, #0
@@ -7203,7 +7199,7 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 10009c3a:	b004      	add	sp, #16
 10009c3c:	4718      	bx	r3
 10009c3e:	46c0      	nop			; (mov r8, r8)
-10009c40:	1000ae7c 	.word	0x1000ae7c
+10009c40:	1000ae70 	.word	0x1000ae70
 
 10009c44 <setbuf>:
 10009c44:	b508      	push	{r3, lr}
@@ -7336,10 +7332,10 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 10009d4a:	2001      	movs	r0, #1
 10009d4c:	4240      	negs	r0, r0
 10009d4e:	bdfe      	pop	{r1, r2, r3, r4, r5, r6, r7, pc}
-10009d50:	1000ae7c 	.word	0x1000ae7c
-10009d54:	1000ad68 	.word	0x1000ad68
-10009d58:	1000ad88 	.word	0x1000ad88
-10009d5c:	1000ada8 	.word	0x1000ada8
+10009d50:	1000ae70 	.word	0x1000ae70
+10009d54:	1000ad5c 	.word	0x1000ad5c
+10009d58:	1000ad7c 	.word	0x1000ad7c
+10009d5c:	1000ad9c 	.word	0x1000ad9c
 10009d60:	10009ed1 	.word	0x10009ed1
 
 10009d64 <__sflush_r>:
@@ -7518,9 +7514,9 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 10009ebc:	1c21      	adds	r1, r4, #0
 10009ebe:	f7ff ff51 	bl	10009d64 <__sflush_r>
 10009ec2:	bd38      	pop	{r3, r4, r5, pc}
-10009ec4:	1000ad68 	.word	0x1000ad68
-10009ec8:	1000ad88 	.word	0x1000ad88
-10009ecc:	1000ada8 	.word	0x1000ada8
+10009ec4:	1000ad5c 	.word	0x1000ad5c
+10009ec8:	1000ad7c 	.word	0x1000ad7c
+10009ecc:	1000ad9c 	.word	0x1000ad9c
 
 10009ed0 <_cleanup_r>:
 10009ed0:	b508      	push	{r3, lr}
@@ -7626,7 +7622,7 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 10009faa:	2301      	movs	r3, #1
 10009fac:	61a3      	str	r3, [r4, #24]
 10009fae:	bd13      	pop	{r0, r1, r4, pc}
-10009fb0:	1000ad64 	.word	0x1000ad64
+10009fb0:	1000ad58 	.word	0x1000ad58
 10009fb4:	10009ed1 	.word	0x10009ed1
 
 10009fb8 <__sfp>:
@@ -7687,7 +7683,7 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 1000a02a:	64a7      	str	r7, [r4, #72]	; 0x48
 1000a02c:	64e7      	str	r7, [r4, #76]	; 0x4c
 1000a02e:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
-1000a030:	1000ad64 	.word	0x1000ad64
+1000a030:	1000ad58 	.word	0x1000ad58
 
 1000a034 <_fwalk_reent>:
 1000a034:	b5f7      	push	{r0, r1, r2, r4, r5, r6, r7, lr}
@@ -7733,7 +7729,7 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 1000a080:	f000 f84a 	bl	1000a118 <_malloc_r>
 1000a084:	bd08      	pop	{r3, pc}
 1000a086:	46c0      	nop			; (mov r8, r8)
-1000a088:	1000ae7c 	.word	0x1000ae7c
+1000a088:	1000ae70 	.word	0x1000ae70
 
 1000a08c <_free_r>:
 1000a08c:	b530      	push	{r4, r5, lr}
@@ -7804,7 +7800,7 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 1000a10e:	6059      	str	r1, [r3, #4]
 1000a110:	bd30      	pop	{r4, r5, pc}
 1000a112:	46c0      	nop			; (mov r8, r8)
-1000a114:	1000aeb8 	.word	0x1000aeb8
+1000a114:	1000aeac 	.word	0x1000aeac
 
 1000a118 <_malloc_r>:
 1000a118:	2303      	movs	r3, #3
@@ -7888,8 +7884,8 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 1000a1ba:	1c33      	adds	r3, r6, #0
 1000a1bc:	e7ec      	b.n	1000a198 <_malloc_r+0x80>
 1000a1be:	bd70      	pop	{r4, r5, r6, pc}
-1000a1c0:	1000aeb8 	.word	0x1000aeb8
-1000a1c4:	1000aeb4 	.word	0x1000aeb4
+1000a1c0:	1000aeac 	.word	0x1000aeac
+1000a1c4:	1000aea8 	.word	0x1000aea8
 
 1000a1c8 <__sfputc_r>:
 1000a1c8:	6893      	ldr	r3, [r2, #8]
@@ -8183,13 +8179,13 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 1000a412:	b01f      	add	sp, #124	; 0x7c
 1000a414:	bdf0      	pop	{r4, r5, r6, r7, pc}
 1000a416:	46c0      	nop			; (mov r8, r8)
-1000a418:	1000ad68 	.word	0x1000ad68
-1000a41c:	1000ad88 	.word	0x1000ad88
-1000a420:	1000ada8 	.word	0x1000ada8
-1000a424:	1000adce 	.word	0x1000adce
-1000a428:	1000add2 	.word	0x1000add2
+1000a418:	1000ad5c 	.word	0x1000ad5c
+1000a41c:	1000ad7c 	.word	0x1000ad7c
+1000a420:	1000ad9c 	.word	0x1000ad9c
+1000a424:	1000adc2 	.word	0x1000adc2
+1000a428:	1000adc6 	.word	0x1000adc6
 1000a42c:	00000000 	.word	0x00000000
-1000a430:	1000adc8 	.word	0x1000adc8
+1000a430:	1000adbc 	.word	0x1000adbc
 1000a434:	1000a1f3 	.word	0x1000a1f3
 
 1000a438 <_printf_common>:
@@ -8577,8 +8573,8 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 1000a736:	e7ef      	b.n	1000a718 <_printf_i+0x204>
 1000a738:	b00b      	add	sp, #44	; 0x2c
 1000a73a:	bdf0      	pop	{r4, r5, r6, r7, pc}
-1000a73c:	1000add9 	.word	0x1000add9
-1000a740:	1000adea 	.word	0x1000adea
+1000a73c:	1000adcd 	.word	0x1000adcd
+1000a740:	1000adde 	.word	0x1000adde
 
 1000a744 <_sbrk_r>:
 1000a744:	b538      	push	{r3, r4, r5, lr}
@@ -8596,7 +8592,7 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 1000a75e:	602b      	str	r3, [r5, #0]
 1000a760:	bd38      	pop	{r3, r4, r5, pc}
 1000a762:	46c0      	nop			; (mov r8, r8)
-1000a764:	1000b100 	.word	0x1000b100
+1000a764:	1000af2c 	.word	0x1000af2c
 
 1000a768 <__sread>:
 1000a768:	b538      	push	{r3, r4, r5, lr}
@@ -8753,9 +8749,9 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 1000a89e:	1c30      	adds	r0, r6, #0
 1000a8a0:	bd70      	pop	{r4, r5, r6, pc}
 1000a8a2:	46c0      	nop			; (mov r8, r8)
-1000a8a4:	1000ad68 	.word	0x1000ad68
-1000a8a8:	1000ad88 	.word	0x1000ad88
-1000a8ac:	1000ada8 	.word	0x1000ada8
+1000a8a4:	1000ad5c 	.word	0x1000ad5c
+1000a8a8:	1000ad7c 	.word	0x1000ad7c
+1000a8ac:	1000ad9c 	.word	0x1000ad9c
 
 1000a8b0 <_write_r>:
 1000a8b0:	b538      	push	{r3, r4, r5, lr}
@@ -8775,7 +8771,7 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 1000a8ce:	602b      	str	r3, [r5, #0]
 1000a8d0:	bd38      	pop	{r3, r4, r5, pc}
 1000a8d2:	46c0      	nop			; (mov r8, r8)
-1000a8d4:	1000b100 	.word	0x1000b100
+1000a8d4:	1000af2c 	.word	0x1000af2c
 
 1000a8d8 <__swsetup_r>:
 1000a8d8:	4b35      	ldr	r3, [pc, #212]	; (1000a9b0 <__swsetup_r+0xd8>)
@@ -8883,10 +8879,10 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 1000a9aa:	3801      	subs	r0, #1
 1000a9ac:	bd70      	pop	{r4, r5, r6, pc}
 1000a9ae:	46c0      	nop			; (mov r8, r8)
-1000a9b0:	1000ae7c 	.word	0x1000ae7c
-1000a9b4:	1000ad68 	.word	0x1000ad68
-1000a9b8:	1000ad88 	.word	0x1000ad88
-1000a9bc:	1000ada8 	.word	0x1000ada8
+1000a9b0:	1000ae70 	.word	0x1000ae70
+1000a9b4:	1000ad5c 	.word	0x1000ad5c
+1000a9b8:	1000ad7c 	.word	0x1000ad7c
+1000a9bc:	1000ad9c 	.word	0x1000ad9c
 
 1000a9c0 <_close_r>:
 1000a9c0:	b538      	push	{r3, r4, r5, lr}
@@ -8904,7 +8900,7 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 1000a9da:	602b      	str	r3, [r5, #0]
 1000a9dc:	bd38      	pop	{r3, r4, r5, pc}
 1000a9de:	46c0      	nop			; (mov r8, r8)
-1000a9e0:	1000b100 	.word	0x1000b100
+1000a9e0:	1000af2c 	.word	0x1000af2c
 
 1000a9e4 <_lseek_r>:
 1000a9e4:	b538      	push	{r3, r4, r5, lr}
@@ -8924,7 +8920,7 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 1000aa02:	602b      	str	r3, [r5, #0]
 1000aa04:	bd38      	pop	{r3, r4, r5, pc}
 1000aa06:	46c0      	nop			; (mov r8, r8)
-1000aa08:	1000b100 	.word	0x1000b100
+1000aa08:	1000af2c 	.word	0x1000af2c
 
 1000aa0c <__smakebuf_r>:
 1000aa0c:	b5f0      	push	{r4, r5, r6, r7, lr}
@@ -9043,7 +9039,7 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 1000aaf2:	602b      	str	r3, [r5, #0]
 1000aaf4:	bd38      	pop	{r3, r4, r5, pc}
 1000aaf6:	46c0      	nop			; (mov r8, r8)
-1000aaf8:	1000b100 	.word	0x1000b100
+1000aaf8:	1000af2c 	.word	0x1000af2c
 
 1000aafc <_fstat_r>:
 1000aafc:	b538      	push	{r3, r4, r5, lr}
@@ -9061,7 +9057,7 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 1000ab16:	d000      	beq.n	1000ab1a <_fstat_r+0x1e>
 1000ab18:	602b      	str	r3, [r5, #0]
 1000ab1a:	bd38      	pop	{r3, r4, r5, pc}
-1000ab1c:	1000b100 	.word	0x1000b100
+1000ab1c:	1000af2c 	.word	0x1000af2c
 
 1000ab20 <_isatty_r>:
 1000ab20:	b538      	push	{r3, r4, r5, lr}
@@ -9079,7 +9075,7 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 1000ab3a:	602b      	str	r3, [r5, #0]
 1000ab3c:	bd38      	pop	{r3, r4, r5, pc}
 1000ab3e:	46c0      	nop			; (mov r8, r8)
-1000ab40:	1000b100 	.word	0x1000b100
+1000ab40:	1000af2c 	.word	0x1000af2c
 
 1000ab44 <Configuration>:
 1000ab44:	0a566455 01320f57 025400a0 01340733     UdV.W.2...T.3.4.
@@ -9113,44 +9109,44 @@ __STATIC_INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
 1000ad04:	10008f58 10008f80 10008fa8 10008fd0     X...............
 1000ad14:	10008ffc 100090ec 1000911c 10009134     ............4...
 1000ad24:	1000914c 10009164 10009250 100092be     L...d...P.......
-1000ad34:	10009338 10009380 646e6148 0a72656c     8.......Handler.
-1000ad44:	0000000d 253a6425 64253a64 3a64253a     ....%d:%d:%d:%d:
-1000ad54:	253a6425 64253a64 00000d0a 00000043     %d:%d:%d....C...
+1000ad34:	10009338 10009380 253a6425 64253a64     8.......%d:%d:%d
+1000ad44:	3a64253a 253a6425 64253a64 00000d0a     :%d:%d:%d:%d....
+1000ad54:	00000043                                C...
 
-1000ad64 <_global_impure_ptr>:
-1000ad64:	1000ae1c                                ....
+1000ad58 <_global_impure_ptr>:
+1000ad58:	1000ae10                                ....
 
-1000ad68 <__sf_fake_stdin>:
+1000ad5c <__sf_fake_stdin>:
 	...
 
-1000ad88 <__sf_fake_stdout>:
+1000ad7c <__sf_fake_stdout>:
 	...
 
-1000ada8 <__sf_fake_stderr>:
+1000ad9c <__sf_fake_stderr>:
 	...
-1000adc8:	2b302d23 6c680020 6665004c 47464567     #-0+ .hlL.efgEFG
-1000add8:	32313000 36353433 41393837 45444342     .0123456789ABCDE
-1000ade8:	31300046 35343332 39383736 64636261     F.0123456789abcd
-1000adf8:	00006665                                ef..
+1000adbc:	2b302d23 6c680020 6665004c 47464567     #-0+ .hlL.efgEFG
+1000adcc:	32313000 36353433 41393837 45444342     .0123456789ABCDE
+1000addc:	31300046 35343332 39383736 64636261     F.0123456789abcd
+1000adec:	00006665                                ef..
 
-1000adfc <_init>:
-1000adfc:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
-1000adfe:	46c0      	nop			; (mov r8, r8)
-1000ae00:	bcf8      	pop	{r3, r4, r5, r6, r7}
-1000ae02:	bc08      	pop	{r3}
-1000ae04:	469e      	mov	lr, r3
-1000ae06:	4770      	bx	lr
+1000adf0 <_init>:
+1000adf0:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+1000adf2:	46c0      	nop			; (mov r8, r8)
+1000adf4:	bcf8      	pop	{r3, r4, r5, r6, r7}
+1000adf6:	bc08      	pop	{r3}
+1000adf8:	469e      	mov	lr, r3
+1000adfa:	4770      	bx	lr
 
-1000ae08 <__init_array_start>:
-1000ae08:	100080b1 	.word	0x100080b1
+1000adfc <__init_array_start>:
+1000adfc:	100080b1 	.word	0x100080b1
 
-1000ae0c <_fini>:
-1000ae0c:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
-1000ae0e:	46c0      	nop			; (mov r8, r8)
-1000ae10:	bcf8      	pop	{r3, r4, r5, r6, r7}
-1000ae12:	bc08      	pop	{r3}
-1000ae14:	469e      	mov	lr, r3
-1000ae16:	4770      	bx	lr
+1000ae00 <_fini>:
+1000ae00:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+1000ae02:	46c0      	nop			; (mov r8, r8)
+1000ae04:	bcf8      	pop	{r3, r4, r5, r6, r7}
+1000ae06:	bc08      	pop	{r3}
+1000ae08:	469e      	mov	lr, r3
+1000ae0a:	4770      	bx	lr
 
-1000ae18 <__fini_array_start>:
-1000ae18:	10008089 	.word	0x10008089
+1000ae0c <__fini_array_start>:
+1000ae0c:	10008089 	.word	0x10008089
