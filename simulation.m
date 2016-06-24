@@ -46,7 +46,7 @@ dlmwrite(file,sentralData, ',');
 % Import data
 startTime = 0;
 stopTime = (index - 1) / 10.0;
-sample = 60;
+sample = 127;
 samplePeriod = 1/sample;
 
 accX = double(sentralData(:, 1)) / 16384.0;
@@ -252,7 +252,7 @@ posPlot = [posPlot; [posPlot(end, 1)*onesVector, posPlot(end, 2)*onesVector, pos
 quatPlot = [quatPlot; [quatPlot(end, 1)*onesVector, quatPlot(end, 2)*onesVector, quatPlot(end, 3)*onesVector, quatPlot(end, 4)*onesVector]];
 
 % Create 6 DOF animation
-SamplePlotFreq = 2;
+SamplePlotFreq = 4;
 Spin = 120;
 SixDofAnimation(posPlot, quatern2rotMat(quatPlot), ...
                 'SamplePlotFreq', SamplePlotFreq, 'Trail', 'All', ...
