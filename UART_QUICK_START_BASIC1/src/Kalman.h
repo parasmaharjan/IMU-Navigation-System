@@ -1,0 +1,12 @@
+double getAngle(double newAngle, double newRate, double dt);
+float kalmanFilterX(float accAngle, float gyroRate, float dt);
+float kalmanFilterY(float accAngle, float gyroRate, float dt);
+float kalmanFilterZ(float accAngle, float gyroRate, float dt);
+void setAngle(double newAngle);
+double getRate();
+void setQangle(double newQ_angle);
+void setQbias(double newQ_bias);
+void setRmeasure(double newR_measure);
+double getQangle();
+double getQbias();
+double getRmeasure();

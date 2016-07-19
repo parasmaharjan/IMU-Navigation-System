@@ -1,5 +1,5 @@
-src/qs_uart_basic.d src/qs_uart_basic.o: ../src/qs_uart_basic.c \
- ../src/asf.h ../src/ASF/sam0/utils/compiler.h \
+src/Kalman.d src/Kalman.o: ../src/Kalman.c ../src/asf.h \
+ ../src/ASF/sam0/utils/compiler.h \
  c:\program\ files\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\lib\gcc\arm-none-eabi\4.9.3\include\stddef.h \
  ../src/ASF/common/utils/parts.h ../src/ASF/sam0/utils/status_codes.h \
  c:\program\ files\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\lib\gcc\arm-none-eabi\4.9.3\include\stdint.h \
@@ -100,14 +100,7 @@ src/qs_uart_basic.d src/qs_uart_basic.o: ../src/qs_uart_basic.c \
  ../src/ASF/common/services/serial/serial.h \
  ../src/ASF/common/services/serial/samb_uart/uart_serial.h \
  ../src/ASF/sam0/drivers/uart/uart.h \
- ../src/ASF/sam0/drivers/timer/timer.h ../src/sentral/sentral_interface.h \
- c:\program\ files\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\string.h \
- c:\program\ files\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\string.h \
- ../src/ASF/sam0/utils/cmsis/samb11/include/samb11g18a.h \
- c:\program\ files\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\fastmath.h \
- c:\program\ files\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\math.h \
- c:\program\ files\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\machine\fastmath.h \
- ../src/Kalman.h
+ ../src/ASF/sam0/drivers/timer/timer.h ../src/kalman.h
 
 ../src/asf.h:
 
@@ -319,18 +312,4 @@ c:\program\ files\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi
 
 ../src/ASF/sam0/drivers/timer/timer.h:
 
-../src/sentral/sentral_interface.h:
-
-c:\program\ files\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\string.h:
-
-c:\program\ files\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\string.h:
-
-../src/ASF/sam0/utils/cmsis/samb11/include/samb11g18a.h:
-
-c:\program\ files\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\fastmath.h:
-
-c:\program\ files\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\math.h:
-
-c:\program\ files\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\machine\fastmath.h:
-
-../src/Kalman.h:
+../src/kalman.h:

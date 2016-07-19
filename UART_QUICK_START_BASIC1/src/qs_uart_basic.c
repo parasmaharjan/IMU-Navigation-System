@@ -46,6 +46,7 @@
 #include <asf.h>
 #include "sentral/sentral_interface.h"
 #include "fastmath.h"
+char buffer[10];
 
 struct uart_module uart_instance;
 
@@ -130,50 +131,42 @@ static void configure_uart(void)
 }
 
 int16_t dataAccGyro[7]; // 3- acc data 1-acc timestamp 3 gyro data
-int16_t dataSentral[18; // (4 x 2) 8 - quat, 3 - mag, 3 - acc, 1 - acc timestamp, 3 - gyro
+int16_t dataSentral[10]; // 3 - mag, 3 - acc, 1 - acc timestamp, 3 - gyro
 
 void rawSentralData(int16_t * destination){
-	uint8_t rawData[40];
+	uint8_t rawData[22];
 	uint32_t data;
 	int16_t data_16;
-	for(uint8_t i = 0; i < 40; i++) {
-		rawData[i] = i2c_sentral_read_reg(0x00 + i);
+	for(uint8_t i = 0; i < 22; i++) {
+		rawData[i] = i2c_sentral_read_reg(0x12 + i);
 	}
-	
-	// Quaternion data
-	data = ((rawData[3] << 24)|(rawData[2] << 16)|(rawData[1] << 8) | rawData[0]) ;
-	memcpy(&destination[0], &data, 4);
-	data = ((rawData[7] << 24)|(rawData[6] << 16)|(rawData[5] << 8) | rawData[4]) ;
-	memcpy(&destination[2], &data, 4);
-	data = ((rawData[11] << 24)|(rawData[10] << 16)|(rawData[9] << 8) | rawData[8]) ;
-	memcpy(&destination[4], &data, 4);
-	data = ((rawData[15] << 24)|(rawData[14] << 16)|(rawData[13] << 8) | rawData[12]) ;
-	memcpy(&destination[6], &data, 4);
-	
+		
 	// Magnetometer - +-1000 uT ------> 200/65536 uT = 1 * 10/32.768 milli Gauss
-	destination[8] = (int16_t)((rawData[19] << 8) | rawData[18]);
-	destination[9] = (int16_t)((rawData[21] << 8) | rawData[20]);
-	destination[10] = (int16_t)((rawData[23] << 8) | rawData[22]);
+	destination[0] = (int16_t)((rawData[1] << 8) | rawData[0]);
+	destination[1] = (int16_t)((rawData[3] << 8) | rawData[2]);
+	destination[2] = (int16_t)((rawData[5] << 8) | rawData[4]);
 	
 	// Accelerometer
-	destination[11] = (int16_t)((rawData[27] << 8) | rawData[26]);
-	destination[12] = (int16_t)((rawData[29] << 8) | rawData[28]);
-	destination[13] = (int16_t)((rawData[31] << 8) | rawData[30]);
+	destination[3] = (int16_t)((rawData[9] << 8) | rawData[8]);
+	destination[4] = (int16_t)((rawData[11] << 8) | rawData[10]);
+	destination[5] = (int16_t)((rawData[13] << 8) | rawData[12]);
 	
 	// Acc time stamp
-	destination[14] = (int16_t)((rawData[33] << 8) | rawData[32]);
+	destination[6] = (int16_t)((rawData[15] << 8) | rawData[14]);
 	
 	// Gyroscope
-	destination[15] = (int16_t)((rawData[35] << 8) | rawData[34]);
-	destination[16] = (int16_t)((rawData[37] << 8) | rawData[36]);
-	destination[17] = (int16_t)((rawData[39] << 8) | rawData[38]);
+	destination[7] = (int16_t)((rawData[17] << 8) | rawData[16]);
+	destination[8] = (int16_t)((rawData[19] << 8) | rawData[18]);
+	destination[9] = (int16_t)((rawData[21] << 8) | rawData[20]);
 }
 
 void readSentralData(float * destination){
-	uint8_t rawData[40];
+	uint8_t rawData[42];
 	uint32_t data;
 	int16_t data_16;
-	for(uint8_t i = 0; i < 40; i++) {
+	uint16_t data_u16;
+	static uint16_t previous_time = 0;
+	for(uint8_t i = 0; i < 42; i++) {
 		rawData[i] = i2c_sentral_read_reg(0x00 + i);
 	}
 	
@@ -210,6 +203,23 @@ void readSentralData(float * destination){
 	destination[11] = (float)(data_16) / 16.4;
 	data_16 = (int16_t)((rawData[39] << 8) | rawData[38]);
 	destination[12] = (float)(data_16) / 16.4;	
+	
+	// Gyro time stamp
+	data_u16 = (uint16_t)((rawData[41] << 8) | rawData[40]);
+// 	if(data_u16 > previous_time)
+// 		printf("%d\n\r", (data_u16-previous_time));
+// 	else
+// 		printf("%d\n\r", (65536 - previous_time + data_u16));	
+	
+	if(data_u16 > previous_time)
+		destination[13] += (float)(data_u16 - previous_time) / 32000.0;
+	else
+		destination[13] += (float)(65536 - previous_time + data_u16) / 32000.0;
+	
+// 	gcvt(destination[13], 5, buffer);
+// 	printf("%s\n\r", buffer);
+	
+	previous_time = data_u16;
 }
 
 void rawAccGryoData(int16_t * destination){
@@ -272,21 +282,41 @@ void acc_to_earth_frame(float acc[3], float q[4]){
 	aef[2] = quat[3];
 }
 
+double atan2(double y, double x)
+{
+	if(x > 0){
+		return atan(y/x);
+		}else if(x < 0 & y >= 0){
+		return (atan(y/x)+(22/7));
+		}else if(x <0 & y < 0){
+		return (atan(y/x)-(22/7));
+		}else if (x == 0 & y > 0){
+		return (22/14);
+		}else if(x == 0 & y < 0){
+		return (-(22/14));
+	}else
+	return 0.0;
+}
+
+#include "Kalman.h"
+double accX, accY, accZ;
+double gyroX, gyroY, gyroZ;
+double dt;
+
+float roll, pitch, heading;
+float data[14];
+
+double gyroXangle, gyroYangle, gyroZangle; // Angle calculate using the gyro only
+double compAngleX, compAngleY, compAngleZ; // Calculated angle using a complementary filter
+double kalAngleX, kalAngleY, kalAngleZ; // Calculated angle using a Kalman filter
+
 int main(void)
 {
-	/**
-	 * For make this QS work, disable the systick to stop task switch.
-	 * Should not do it if you want the BLE functions.
-	 */
-	
-	//SysTick->CTRL &= ~SysTick_CTRL_ENABLE_Msk;
 	system_clock_config(CLOCK_RESOURCE_XO_26_MHZ, CLOCK_FREQ_26_MHZ);
 	
 	configure_gpio_pins();
 	
 	configure_uart();
-	
-	//printf("New Program started\n\rSystick: %d\n\rCore Clock: %d\n\r",SysTick_Config(26000), system_clock_get_value());
 	
 	configure_timer();
 	
@@ -296,6 +326,16 @@ int main(void)
 	
 	init_sentral();
 	
+	readSentralData(data);
+	heading = atan2((data[0]*data[0] - data[1] * data[1] -data[2] * data[2] + data[3] * data[3]) , (2 * (data[0] * data[1] + data[2] * data[3]))) * 57.32;
+	pitch = asin((-2) * (data[0] * data[2] - data[1] * data[3])) * 57.32;
+	roll = atan2((- data[0] * data[0] - data[1] * data[1] + data[2] * data[2] + data[3] * data[3]) , (2 * (data[0] * data[3] + data[1] * data[2]))) * 57.32;
+	
+	
+	setAngle(roll);
+	gyroXangle = roll;
+	compAngleX = roll;
+	
 	while (true)
 	{
 		if(task_1 > 100)
@@ -303,13 +343,81 @@ int main(void)
 			gpio_pin_toggle_output_level(LED_0_PIN);
 			task_1 = 0;
 		}
-		if(task_2 > 1)
+		if(task_2 > 100)
 		{
-			rawSentralData(&dataSentral);
+			readSentralData(data);
 			
-			printf("%d:%d:%d:%d:%d:%d:%d\n\r",(int16_t)dataSentral[0],(int16_t)dataSentral[1],(int16_t)dataSentral[2],(uint16_t)dataSentral[3],(int16_t)dataSentral[4],(int16_t)dataSentral[5],(int16_t)dataSentral[6]);
+			accX = data[7];
+			accY = data[8];
+			accZ = data[9];
+			gyroX = data[10];
+			gyroY = data[11];
+			gyroZ = data[12];
+			dt = data[13];
+			dt = 0.1;
+				
+			roll  = atan2(accY, accZ) * 57.32;
+			pitch = atan(-accX / sqrt(accY * accY + accZ * accZ)) * 57.32;
+			heading = 0;
+			
+// 			heading = atan2((data[0]*data[0] - data[1] * data[1] -data[2] * data[2] + data[3] * data[3]) , (2 * (data[0] * data[1] + data[2] * data[3]))) * 57.32;
+// 			pitch = asin((-2) * (data[0] * data[2] - data[1] * data[3])) * 57.32;
+// 			roll = atan2((- data[0] * data[0] - data[1] * data[1] + data[2] * data[2] + data[3] * data[3]) , (2 * (data[0] * data[3] + data[1] * data[2]))) * 57.32;
+			
+// 			if ((roll < -90 && kalAngleX > 90) || (roll > 90 && kalAngleX < -90)) {
+// 				setAngle(roll);
+// 				compAngleX = roll;
+// 				kalAngleX = roll;
+// 				gyroXangle = roll;
+// 			}
+// 			else
+				kalAngleX = kalmanFilterX(roll, gyroX, dt); // Calculate the angle using a Kalman filter
+				kalAngleY = kalmanFilterY(pitch, gyroY, dt);
+				kalAngleZ = kalmanFilterZ(heading, gyroZ, dt);
+			
+			gyroXangle += gyroX * dt; // Calculate gyro angle without any filter
+			gyroZangle += gyroZ * dt;
+			gyroYangle += gyroY * dt;
+			
+			compAngleX = 0.93 * (compAngleX + gyroX * dt) + 0.07 * roll; // Calculate the angle using a Complimentary filter
+			compAngleY = 0.93 * (compAngleY + gyroY * dt) + 0.07 * pitch;
+			compAngleZ = 0.93 * (compAngleZ + gyroZ * dt) + 0.07 * heading;
+			
+// 			// Reset the gyro angle when it has drifted too much
+// 			if (gyroXangle < -180 || gyroXangle > 180)
+// 				gyroXangle = kalAngleX;
+			
+// 			gcvt(heading, 5, buffer);
+// 			printf(buffer);
+// 			printf("\t");
+// 			gcvt(gyroZangle, 5, buffer);
+// 			printf(buffer);
+// 			printf("\t");
+// 			gcvt(compAngleZ, 5, buffer);
+// 			printf(buffer);
+// 			printf("\t");
+// 			gcvt(kalAngleZ, 5, buffer);
+// 			printf(buffer);
+// 			printf("\n\r");
+
+			gcvt(roll, 5, buffer);
+			printf(buffer);
+			printf("\t");
+			gcvt(gyroXangle, 5, buffer);
+			printf(buffer);
+			printf("\t");
+			gcvt(compAngleX, 5, buffer);
+			printf(buffer);
+			printf("\t");
+			gcvt(kalAngleX, 5, buffer);
+			printf(buffer);
+			printf("\n\r");
 						
 			task_2 = 0;
 		}
+		
+// 		rawSentralData(&dataSentral);
+// 		printf("%d:%d:%d:%d:%d:%d:%d:%d:%d:%d\n\r",(int16_t)dataSentral[0],(int16_t)dataSentral[1],(int16_t)dataSentral[2],(int16_t)dataSentral[3],(int16_t)dataSentral[4],(int16_t)dataSentral[5],(uint16_t)dataSentral[6],(int16_t)dataSentral[7],(int16_t)dataSentral[8],(int16_t)dataSentral[9]);
+		
 	}
 }

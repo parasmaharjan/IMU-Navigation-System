@@ -65,7 +65,7 @@ void i2c_init_sentral(void)
 	config_i2c_master.pinmux_sel_pad1 = SENTRAL_MUX_PAD1;
 	
 	config_i2c_master.clock_source = I2C_CLOCK_SOURCE_SELECT_CLOCK_3;
-	config_i2c_master.clock_divider = 0x10;
+	config_i2c_master.clock_divider = 0x8;
 	
 	/* Initialize and enable device with config */
 	while(i2c_master_init(&i2c_master_instance, SENTRAL_I2C_MODULE, &config_i2c_master) != STATUS_OK) {

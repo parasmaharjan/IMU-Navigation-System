@@ -485,6 +485,9 @@
     <Folder Include="src\sentral" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\Kalman.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\sentral\sentral_interface.c">
       <SubType>compile</SubType>
     </Compile>
